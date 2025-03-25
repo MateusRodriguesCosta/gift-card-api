@@ -1,4 +1,4 @@
-package com.incomm_app.incomm_poc_rest;
+package com.giftcard_app.poc_rest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

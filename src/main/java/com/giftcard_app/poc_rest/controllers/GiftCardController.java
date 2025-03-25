@@ -1,4 +1,4 @@
-package com.incomm_app.incomm_poc_rest.controllers;
+package com.giftcard_app.poc_rest.controllers;
 
 import java.util.List;
 
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.incomm_app.incomm_poc_rest.models.GiftCard;
-import com.incomm_app.incomm_poc_rest.repositories.GiftCardRepository;
+import com.giftcard_app.poc_rest.models.GiftCard;
+import com.giftcard_app.poc_rest.repositories.GiftCardRepository;
 
 import jakarta.validation.Valid;
 

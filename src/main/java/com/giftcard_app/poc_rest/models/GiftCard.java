@@ -1,4 +1,4 @@
-package com.incomm_app.incomm_poc_rest.models;
+package com.giftcard_app.poc_rest.models;
 
 import java.math.BigDecimal;
 
