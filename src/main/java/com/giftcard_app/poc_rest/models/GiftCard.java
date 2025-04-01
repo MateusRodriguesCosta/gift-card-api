@@ -1,12 +1,9 @@
 package com.giftcard_app.poc_rest.models;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,8 +19,8 @@ import lombok.NoArgsConstructor;
 public class GiftCard {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public String id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    public UUID id;
     @Column(unique = true, nullable = false)
     @NotBlank(message = "Code is mandatory")
     public String code;    
