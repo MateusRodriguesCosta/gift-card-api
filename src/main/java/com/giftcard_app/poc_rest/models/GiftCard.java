@@ -3,6 +3,7 @@ package com.giftcard_app.poc_rest.models;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import com.giftcard_app.poc_rest.validation.ValidGiftCardNumber;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,8 +23,9 @@ public class GiftCard {
     @GeneratedValue(strategy = GenerationType.UUID)
     public UUID id;
     @Column(unique = true, nullable = false)
-    @NotBlank(message = "Code is mandatory")
-    public String code;    
+    @NotBlank(message = "Card number is mandatory")
+    @ValidGiftCardNumber
+    public String cardNumber;
     @NotNull(message = "Balance is mandatory")
     public BigDecimal balance;
     @NotNull(message = "Card Status is mandatory")
