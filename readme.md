@@ -1,7 +1,8 @@
 # This is current brainstorm of the API business logic:
 
 ### Create new gift card:
- Issue new card requires nothing, the system should allow zero balance at start and provide **secure generated code**.
+ Issue new card requires nothing, the system should allow zero balance at start and provide **secure generated code**
+ via Apache Commons Validator luhn method.
 ### Bulk Operations (create and update):
  Each card must have valid code, balance, and status.
 ### Update gift card balance:
@@ -42,4 +43,5 @@
  - Lombok 1.18.36
  - Maven 3.9.9
  - Springdoc 2.8.6
+ - Apache Commons Validator 1.7
 

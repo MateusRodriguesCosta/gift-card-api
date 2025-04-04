@@ -22,14 +22,14 @@ public class GiftCard {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     public UUID id;
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     @NotBlank(message = "Card number is mandatory")
     @ValidGiftCardNumber
     public String cardNumber;
     @NotNull(message = "Balance is mandatory")
     public BigDecimal balance;
     @NotNull(message = "Card Status is mandatory")
-    public String cardStatus;    
+    public String cardStatus;
     public String cardExpiryDate;
     @NotNull(message = "Card Issue Date is mandatory")
     public String cardIssueDate;
