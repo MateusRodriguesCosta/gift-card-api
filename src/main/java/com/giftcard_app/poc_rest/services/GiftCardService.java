@@ -1,6 +1,7 @@
 package com.giftcard_app.poc_rest.services;
 
-import com.giftcard_app.poc_rest.dto.GiftCardDTO;
+import com.giftcard_app.poc_rest.dto.card.CreateCardDTO;
+import com.giftcard_app.poc_rest.dto.card.FullCardDTO;
 import com.giftcard_app.poc_rest.mapper.GiftCardMapper;
 import com.giftcard_app.poc_rest.models.GiftCard;
 import com.giftcard_app.poc_rest.repositories.GiftCardRepository;
@@ -28,26 +29,26 @@ public class GiftCardService {
         this.giftCardMapper = giftCardMapper;
     }
 
-    public List<GiftCardDTO> getAllGiftCards() {
+    public List<FullCardDTO> getAllGiftCards() {
         return giftCardRepository.findAll()
                 .stream()
-                .map(giftCardMapper::toDTO)
+                .map(giftCardMapper::toFullDTO)
                 .collect(Collectors.toList());
     }
 
-    public GiftCardDTO getGiftCardByCardNumber(String cardNumber) {
+    public FullCardDTO getGiftCardByCardNumber(String cardNumber) {
         GiftCard giftCard = giftCardRepository.findByCardNumber(cardNumber)
                 .orElseThrow(() -> new RuntimeException("GiftCard not found"));
-        return giftCardMapper.toDTO(giftCard);
+        return giftCardMapper.toFullDTO(giftCard);
     }
 
-    public GiftCardDTO createGiftCard(GiftCardDTO giftCardDTO) {
-        GiftCard giftCard = giftCardMapper.toEntity(giftCardDTO);
+    public CreateCardDTO createGiftCard(CreateCardDTO createCardDTO) {
+        GiftCard giftCard = giftCardMapper.toEntity(createCardDTO);
         giftCard.cardNumber = this.generateGiftCardNumber();
         // TODO set issue date and status
         GiftCard savedGiftCard = giftCardRepository.save(giftCard);
 
-        return giftCardMapper.toDTO(savedGiftCard);
+        return giftCardMapper.toCreateDTO(savedGiftCard);
     }
 
     /**
