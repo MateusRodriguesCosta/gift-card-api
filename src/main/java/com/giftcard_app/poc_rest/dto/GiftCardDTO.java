@@ -11,7 +11,9 @@ public class GiftCardDTO {
     public UUID id;
     public String cardNumber;
     public BigDecimal balance;
-    public String cardStatus;
-    public String cardExpiryDate;
-    public String cardIssueDate;
+    public String currency;
+    public String region;
+    public String status;
+    public String expiryDate;
+    public String issueDate;
 }

@@ -28,10 +28,14 @@ public class GiftCard {
     public String cardNumber;
     @NotNull(message = "Balance is mandatory")
     public BigDecimal balance;
-    @NotNull(message = "Card Status is mandatory")
-    public String cardStatus;
-    public String cardExpiryDate;
-    @NotNull(message = "Card Issue Date is mandatory")
-    public String cardIssueDate;
+    @NotNull(message = "Card currency is mandatory")
+    public String currency;
+    @NotNull(message = "Card region is mandatory")
+    public String region;
+    @NotNull(message = "Card status is mandatory")
+    public String status;
+    public String expiryDate;
+    @NotNull(message = "Card issue date is mandatory")
+    public String issueDate;
     public String user_id;
 }

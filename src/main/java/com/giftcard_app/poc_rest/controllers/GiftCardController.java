@@ -1,10 +1,9 @@
 package com.giftcard_app.poc_rest.controllers;
 
-import com.giftcard_app.poc_rest.models.GiftCard;
-import com.giftcard_app.poc_rest.repositories.GiftCardRepository;
+import com.giftcard_app.poc_rest.dto.GiftCardDTO;
+import com.giftcard_app.poc_rest.services.GiftCardService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,29 +11,38 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/giftcards")
+@RequestMapping("/api/v1/giftcard")
 public class GiftCardController {
-    
-    @Autowired
-    private GiftCardRepository giftCardRepository;
 
+    private final GiftCardService giftCardService;
 
-    @Operation(summary = "Get all registered gift cards")
+    public GiftCardController(GiftCardService giftCardService) {
+        this.giftCardService = giftCardService;
+    }
+
     @GetMapping
-    public List<GiftCard> getAll() {
-        return giftCardRepository.findAll();
+    public ResponseEntity<List<GiftCardDTO>> getAll() {
+        List<GiftCardDTO> giftCards = giftCardService.getAllGiftCards();
+        return ResponseEntity.ok(giftCards);
+    }
+
+    @GetMapping("/{cardNumber}")
+    public ResponseEntity<GiftCardDTO> getGiftCardByCardNumber(@PathVariable String cardNumber) {
+        GiftCardDTO dto = giftCardService.getGiftCardByCardNumber(cardNumber);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/isValid/{cardNumber}")
+    public ResponseEntity<Boolean> isValid(@RequestParam String cardNumber) {
+        Boolean isValid = this.giftCardService.isValidGiftCardNumber(cardNumber);
+        return ResponseEntity.ok(isValid);
     }
 
     @PostMapping
-    public ResponseEntity<GiftCard> createGiftCard(@Valid @RequestBody GiftCard giftCard) {
-        GiftCard saved = giftCardRepository.save(giftCard);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    public ResponseEntity<GiftCardDTO> createGiftCard(@Valid @RequestBody GiftCardDTO giftCardDTO) {
+        GiftCardDTO created = giftCardService.createGiftCard(giftCardDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<GiftCard> getGiftCardById(@PathVariable Long id) {
-        return giftCardRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+
 }
