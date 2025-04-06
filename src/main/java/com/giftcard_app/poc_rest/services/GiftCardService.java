@@ -42,8 +42,8 @@ public class GiftCardService {
                 .collect(Collectors.toList());
     }
 
-    public FullCardDTO getGiftCardByCardNumber(String cardNumber) {
-        GiftCard giftCard = giftCardRepository.findByCardNumber(cardNumber)
+    public FullCardDTO getGiftCardByToken(String token) {
+        GiftCard giftCard = giftCardRepository.findByToken((token))
                 .orElseThrow(() -> new RuntimeException("GiftCard not found"));
         return giftCardMapper.toFullDTO(giftCard);
     }
@@ -75,8 +75,10 @@ public class GiftCardService {
         return this.appendCheckDigit(baseNumber.toString());
     }
 
-    public boolean isValidGiftCardNumber(String giftCardNumber) {
-        return luhn.isValid(giftCardNumber);
+    public boolean isValidGiftCard(String token) {
+        GiftCard giftCard = giftCardRepository.findByToken((token))
+                .orElseThrow(() -> new RuntimeException("GiftCard not found"));
+        return luhn.isValid(giftCard.cardNumber);
     }
 
     public String appendCheckDigit(String baseNumber) {

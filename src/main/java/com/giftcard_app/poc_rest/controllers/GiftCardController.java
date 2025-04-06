@@ -26,15 +26,15 @@ public class GiftCardController {
         return ResponseEntity.ok(giftCards);
     }
 
-    @GetMapping("/{cardNumber}")
-    public ResponseEntity<FullCardDTO> getGiftCardByCardNumber(@PathVariable String cardNumber) {
-        FullCardDTO dto = giftCardService.getGiftCardByCardNumber(cardNumber);
+    @GetMapping("/{token}")
+    public ResponseEntity<FullCardDTO> getGiftCardByToken(@PathVariable String token) {
+        FullCardDTO dto = giftCardService.getGiftCardByToken(token);
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/isValid/{cardNumber}")
-    public ResponseEntity<Boolean> isValid(@PathVariable String cardNumber) {
-        Boolean isValid = this.giftCardService.isValidGiftCardNumber(cardNumber);
+    @GetMapping("/isValid/{token}")
+    public ResponseEntity<Boolean> isValid(@PathVariable String token) {
+        Boolean isValid = this.giftCardService.isValidGiftCard(token);
         return ResponseEntity.ok(isValid);
     }
 
