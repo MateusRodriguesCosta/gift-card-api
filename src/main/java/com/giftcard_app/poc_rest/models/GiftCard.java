@@ -22,6 +22,8 @@ public class GiftCard {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     public UUID id;
+    @Column(unique = true, nullable = false)
+    public String token;
     @Column(unique = true)
     @NotBlank(message = "Card number is mandatory")
     @ValidGiftCardNumber

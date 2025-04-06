@@ -1,5 +1,6 @@
 package com.giftcard_app.poc_rest.services;
 
+import com.giftcard_app.poc_rest.components.CardTokenGenerator;
 import com.giftcard_app.poc_rest.dto.card.CreateCardDTO;
 import com.giftcard_app.poc_rest.dto.card.FullCardDTO;
 import com.giftcard_app.poc_rest.mapper.GiftCardMapper;
@@ -10,6 +11,7 @@ import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,10 +25,14 @@ public class GiftCardService {
 
     private final GiftCardRepository giftCardRepository;
     private final GiftCardMapper giftCardMapper;
+    private final CardTokenGenerator cardTokenGenerator;
 
-    public GiftCardService(GiftCardRepository giftCardRepository, GiftCardMapper giftCardMapper) {
+    public GiftCardService(GiftCardRepository giftCardRepository,
+                           GiftCardMapper giftCardMapper,
+                           CardTokenGenerator cardTokenGenerator) {
         this.giftCardRepository = giftCardRepository;
         this.giftCardMapper = giftCardMapper;
+        this.cardTokenGenerator = cardTokenGenerator;
     }
 
     public List<FullCardDTO> getAllGiftCards() {
@@ -44,7 +50,10 @@ public class GiftCardService {
 
     public CreateCardDTO createGiftCard(CreateCardDTO createCardDTO) {
         GiftCard giftCard = giftCardMapper.toEntity(createCardDTO);
+        giftCard.token = cardTokenGenerator.generateToken();
         giftCard.cardNumber = this.generateGiftCardNumber();
+        giftCard.issueDate = LocalDate.now().toString();
+        giftCard.status = "new";
         // TODO set issue date and status
         GiftCard savedGiftCard = giftCardRepository.save(giftCard);
 

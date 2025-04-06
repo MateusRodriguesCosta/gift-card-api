@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 
 @Data
 public class CreateCardDTO {
-    public String cardNumber;
     public BigDecimal balance;
     public String currency;
     public String region;

@@ -8,11 +8,19 @@ import java.util.UUID;
 @Data
 public class FullCardDTO {
     public UUID id;
-    public String cardNumber;
+    public String token;
+    public String maskedCardNumber;
     public BigDecimal balance;
     public String currency;
     public String region;
     public String status;
     public String expiryDate;
     public String issueDate;
+
+    public String getMaskedCardNumber() {
+        if(maskedCardNumber != null && maskedCardNumber.length() > 4) {
+            return "**** **** **** " + maskedCardNumber.substring(maskedCardNumber.length() - 4);
+        }
+        return maskedCardNumber;
+    }
 }

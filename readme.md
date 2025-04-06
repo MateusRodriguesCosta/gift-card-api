@@ -1,4 +1,4 @@
-# This is current brainstorm of the API business logic:
+# This is current brainstorm of the API business logic
 
 ### Create new gift card:
  Issue new card requires nothing, the system should allow zero balance at start and provide **secure generated code**
@@ -15,9 +15,10 @@
  the status should allow the Exchange for both cards, and the cards must not be expired.
 ### Cancel/block gift card:
  The card number must be valid, cannot delete if in use, and balance should be zero.
+### PCI DSS
+ I found on the internet that this is industry pattern to guarantee security over cards applications
 
-
-# This is current temp architectural brainstorm:
+# This is current architectural brainstorm
 
 ### Layered Architecture
  I will split the app using a common architecture with controllers, services, and repositories. As I have two
