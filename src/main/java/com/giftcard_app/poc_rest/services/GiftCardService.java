@@ -7,10 +7,12 @@ import com.giftcard_app.poc_rest.enums.CardStatus;
 import com.giftcard_app.poc_rest.mapper.GiftCardMapper;
 import com.giftcard_app.poc_rest.models.GiftCard;
 import com.giftcard_app.poc_rest.repositories.GiftCardRepository;
+import jakarta.transaction.Transactional;
 import org.apache.commons.validator.routines.checkdigit.CheckDigitException;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,7 +46,7 @@ public class GiftCardService {
     }
 
     public FullCardDTO getGiftCardByToken(String token) {
-        GiftCard giftCard = giftCardRepository.findByToken((token))
+        GiftCard giftCard = giftCardRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Gift card not found"));
         return giftCardMapper.toFullDTO(giftCard);
     }
@@ -58,6 +60,38 @@ public class GiftCardService {
         GiftCard savedGiftCard = giftCardRepository.save(giftCard);
 
         return giftCardMapper.toCreateDTO(savedGiftCard);
+    }
+
+    @Transactional
+    public void cancelGiftCard(String token) {
+        GiftCard giftCard = giftCardRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Gift card not found"));
+
+        if (giftCard.status == CardStatus.ACTIVE) {
+           giftCard.status = CardStatus.CANCELLED;
+           giftCardRepository.save(giftCard);
+        } else {
+            throw new RuntimeException("Gift card is not active");
+        }
+    }
+
+    @Transactional
+    public FullCardDTO updateGiftCardBalance(String token, BigDecimal amount) {
+        GiftCard giftCard = giftCardRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Gift card not found"));
+
+        if (giftCard.status != CardStatus.ACTIVE) {
+            throw new RuntimeException("Cannot update balance: gift card is not active");
+        }
+
+        if (amount.compareTo(BigDecimal.ZERO) < 0) {
+            throw new RuntimeException("Cannot update balance: amount less than zero");
+        }
+
+        giftCard.setBalance(amount);
+        giftCardRepository.save(giftCard);
+
+        return giftCardMapper.toFullDTO(giftCardRepository.save(giftCard));
     }
 
     /**

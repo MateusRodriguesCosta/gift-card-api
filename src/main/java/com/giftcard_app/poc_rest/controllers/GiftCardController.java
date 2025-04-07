@@ -1,5 +1,6 @@
 package com.giftcard_app.poc_rest.controllers;
 
+import com.giftcard_app.poc_rest.dto.balance.BalanceUpdateRequest;
 import com.giftcard_app.poc_rest.dto.card.CreateCardDTO;
 import com.giftcard_app.poc_rest.dto.card.FullCardDTO;
 import com.giftcard_app.poc_rest.services.GiftCardService;
@@ -42,6 +43,19 @@ public class GiftCardController {
     public ResponseEntity<CreateCardDTO> createGiftCard(@Valid @RequestBody CreateCardDTO createCardDTO) {
         CreateCardDTO created = giftCardService.createGiftCard(createCardDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @PatchMapping("/cancel/{token}")
+    public ResponseEntity<String> cancelGiftCard(@PathVariable String token) {
+        giftCardService.cancelGiftCard(token);
+        return ResponseEntity.ok("Card cancelled successfully");
+    }
+
+    @PatchMapping("/balance/{token}")
+    public ResponseEntity<FullCardDTO> balanceGiftCard(@PathVariable String token,
+                                                       @RequestBody @Valid BalanceUpdateRequest balanceUpdateRequest) {
+        FullCardDTO fullCardDTO = giftCardService.updateGiftCardBalance(token, balanceUpdateRequest.getAmount());
+        return ResponseEntity.ok(fullCardDTO);
     }
 
 }

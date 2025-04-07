@@ -9,7 +9,7 @@ import java.util.Base64;
 public class CardTokenGenerator {
 
     private static final SecureRandom secureRandom = new SecureRandom();
-    private static final Base64.Encoder base64Encoder = Base64.getEncoder().withoutPadding();
+    private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder().withoutPadding();
 
     public String generateToken() {
         byte[] bytes = new byte[24];
