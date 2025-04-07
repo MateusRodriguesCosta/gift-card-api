@@ -1,8 +1,6 @@
 package com.giftcard_app.poc_rest.models;
 
-import java.math.BigDecimal;
-import java.util.UUID;
-
+import com.giftcard_app.poc_rest.enums.CardStatus;
 import com.giftcard_app.poc_rest.validation.ValidGiftCardNumber;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -11,6 +9,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -35,9 +38,10 @@ public class GiftCard {
     @NotNull(message = "Card region is mandatory")
     public String region;
     @NotNull(message = "Card status is mandatory")
-    public String status;
-    public String expiryDate;
+    @Enumerated(EnumType.STRING)
+    public CardStatus status;
+    public LocalDate expiryDate;
     @NotNull(message = "Card issue date is mandatory")
-    public String issueDate;
+    public LocalDateTime issueDate;
     public String user_id;
 }

@@ -1,9 +1,12 @@
 package com.giftcard_app.poc_rest.dto.card;
 
+import com.giftcard_app.poc_rest.enums.CardStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class FullCardDTO {
@@ -13,9 +16,9 @@ public class FullCardDTO {
     public BigDecimal balance;
     public String currency;
     public String region;
-    public String status;
-    public String expiryDate;
-    public String issueDate;
+    public CardStatus status;
+    public LocalDate expiryDate;
+    public LocalDateTime issueDate;
 
     /**
      * @return the last 4 digits of the card.

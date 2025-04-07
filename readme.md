@@ -3,18 +3,18 @@
 ### Create new gift card:
  Issue new card requires nothing, the system should allow zero balance at start and provide **secure generated code**
  via Apache Commons Validator luhn method.
-### Bulk Operations (create and update):
- Each card must have valid code, balance, and status.
 ### Update gift card balance:
  The card number must be valid, and the status should allow the update.
 ### Update gift card expire date:
  The card number must be valid, and status should allow the update.
+### Cancel/block gift card:
+The card number must be valid, cannot delete if in use, and balance should be zero.
+### Bulk Operations:
+Each card must have valid code, balance, and status.
 ### Exchange balance between cards:
  both card numbers must be valid,
  the card need credit in balance to transfer,
  the status should allow the Exchange for both cards, and the cards must not be expired.
-### Cancel/block gift card:
- The card number must be valid, cannot delete if in use, and balance should be zero.
 ### PCI DSS
  I found on the internet that this is industry pattern to guarantee security over cards applications
 

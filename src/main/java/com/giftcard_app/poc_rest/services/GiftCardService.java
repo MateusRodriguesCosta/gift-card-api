@@ -3,6 +3,7 @@ package com.giftcard_app.poc_rest.services;
 import com.giftcard_app.poc_rest.components.CardTokenGenerator;
 import com.giftcard_app.poc_rest.dto.card.CreateCardDTO;
 import com.giftcard_app.poc_rest.dto.card.FullCardDTO;
+import com.giftcard_app.poc_rest.enums.CardStatus;
 import com.giftcard_app.poc_rest.mapper.GiftCardMapper;
 import com.giftcard_app.poc_rest.models.GiftCard;
 import com.giftcard_app.poc_rest.repositories.GiftCardRepository;
@@ -11,7 +12,7 @@ import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,7 @@ public class GiftCardService {
 
     public FullCardDTO getGiftCardByToken(String token) {
         GiftCard giftCard = giftCardRepository.findByToken((token))
-                .orElseThrow(() -> new RuntimeException("GiftCard not found"));
+                .orElseThrow(() -> new RuntimeException("Gift card not found"));
         return giftCardMapper.toFullDTO(giftCard);
     }
 
@@ -52,9 +53,8 @@ public class GiftCardService {
         GiftCard giftCard = giftCardMapper.toEntity(createCardDTO);
         giftCard.token = cardTokenGenerator.generateToken();
         giftCard.cardNumber = this.generateGiftCardNumber();
-        giftCard.issueDate = LocalDate.now().toString();
-        giftCard.status = "new";
-        // TODO set issue date and status
+        giftCard.issueDate = LocalDateTime.now();
+        giftCard.status = CardStatus.ACTIVE;
         GiftCard savedGiftCard = giftCardRepository.save(giftCard);
 
         return giftCardMapper.toCreateDTO(savedGiftCard);
@@ -64,7 +64,7 @@ public class GiftCardService {
      * Generate gift card number from a random base and the check digit
      * @return Full gift card number
      */
-    public String generateGiftCardNumber() {
+    private String generateGiftCardNumber() {
         StringBuilder baseNumber = new StringBuilder();
 
         for (int i = 0; i < BASE_NUMBER_LENGTH; i++) {
@@ -77,11 +77,11 @@ public class GiftCardService {
 
     public boolean isValidGiftCard(String token) {
         GiftCard giftCard = giftCardRepository.findByToken((token))
-                .orElseThrow(() -> new RuntimeException("GiftCard not found"));
+                .orElseThrow(() -> new RuntimeException("Gift card not found"));
         return luhn.isValid(giftCard.cardNumber);
     }
 
-    public String appendCheckDigit(String baseNumber) {
+    private String appendCheckDigit(String baseNumber) {
         try {
             return baseNumber + luhn.calculate(baseNumber);
         } catch (CheckDigitException e) {
