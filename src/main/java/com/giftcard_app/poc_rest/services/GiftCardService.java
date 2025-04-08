@@ -1,5 +1,6 @@
 package com.giftcard_app.poc_rest.services;
 
+import com.giftcard_app.poc_rest.components.CardNumberGenerator;
 import com.giftcard_app.poc_rest.components.CardTokenGenerator;
 import com.giftcard_app.poc_rest.dto.card.CreateCardDTO;
 import com.giftcard_app.poc_rest.dto.card.FullCardDTO;
@@ -11,12 +12,10 @@ import com.giftcard_app.poc_rest.mapper.GiftCardMapper;
 import com.giftcard_app.poc_rest.models.GiftCard;
 import com.giftcard_app.poc_rest.repositories.GiftCardRepository;
 import jakarta.transaction.Transactional;
-import org.apache.commons.validator.routines.checkdigit.CheckDigitException;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,21 +23,21 @@ import java.util.stream.Collectors;
 @Service
 public class GiftCardService {
 
-    private static final String DIGITS = "0123456789";
-    private static final int BASE_NUMBER_LENGTH = 15;
-    private static final SecureRandom RANDOM = new SecureRandom();
-    private final LuhnCheckDigit luhn = new LuhnCheckDigit();
-
     private final GiftCardRepository giftCardRepository;
     private final GiftCardMapper giftCardMapper;
     private final CardTokenGenerator cardTokenGenerator;
+    private final CardNumberGenerator cardNumberGenerator;
+
+    private final LuhnCheckDigit luhn = new LuhnCheckDigit();
 
     public GiftCardService(GiftCardRepository giftCardRepository,
                            GiftCardMapper giftCardMapper,
-                           CardTokenGenerator cardTokenGenerator) {
+                           CardTokenGenerator cardTokenGenerator,
+                           CardNumberGenerator cardNumberGenerator) {
         this.giftCardRepository = giftCardRepository;
         this.giftCardMapper = giftCardMapper;
         this.cardTokenGenerator = cardTokenGenerator;
+        this.cardNumberGenerator = cardNumberGenerator;
     }
 
     public List<FullCardDTO> getAllGiftCards() {
@@ -57,12 +56,18 @@ public class GiftCardService {
     public CreateCardDTO createGiftCard(CreateCardDTO createCardDTO) {
         GiftCard giftCard = giftCardMapper.toEntity(createCardDTO);
         giftCard.setToken(cardTokenGenerator.generateToken());
-        giftCard.setCardNumber(this.generateGiftCardNumber());
+        giftCard.setCardNumber(this.cardNumberGenerator.generateCardNumber());
         giftCard.setIssueDate(LocalDateTime.now());
         giftCard.setStatus(CardStatus.ACTIVE);
         GiftCard savedGiftCard = giftCardRepository.save(giftCard);
 
         return giftCardMapper.toCreateDTO(savedGiftCard);
+    }
+
+    public boolean isValidGiftCard(String token) {
+        GiftCard giftCard = giftCardRepository.findByToken((token))
+                .orElseThrow(() -> new RuntimeException("Gift card not found"));
+        return luhn.isValid(giftCard.getCardNumber());
     }
 
     @Transactional
@@ -125,34 +130,4 @@ public class GiftCardService {
             throw new IllegalArgumentException("Amount must be greater than zero");
         }
     }
-
-    /**
-     * Generate gift card number from a random base and the check digit
-     * @return Full gift card number
-     */
-    private String generateGiftCardNumber() {
-        StringBuilder baseNumber = new StringBuilder();
-
-        for (int i = 0; i < BASE_NUMBER_LENGTH; i++) {
-            int index = RANDOM.nextInt(DIGITS.length());
-            baseNumber.append(DIGITS.charAt(index));
-        }
-
-        return this.appendCheckDigit(baseNumber.toString());
-    }
-
-    public boolean isValidGiftCard(String token) {
-        GiftCard giftCard = giftCardRepository.findByToken((token))
-                .orElseThrow(() -> new RuntimeException("Gift card not found"));
-        return luhn.isValid(giftCard.getCardNumber());
-    }
-
-    private String appendCheckDigit(String baseNumber) {
-        try {
-            return baseNumber + luhn.calculate(baseNumber);
-        } catch (CheckDigitException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }
