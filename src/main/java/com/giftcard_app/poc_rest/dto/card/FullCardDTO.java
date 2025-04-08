@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 @Data
 public class FullCardDTO {
     @Schema(description = "Unique token for the gift card", example = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
-    public String token;
-    public String maskedCardNumber;
-    public BigDecimal balance;
-    public String currency;
-    public String region;
-    public CardStatus status;
-    public LocalDate expiryDate;
-    public LocalDateTime issueDate;
+    private String token;
+    private String maskedCardNumber;
+    private BigDecimal balance;
+    private String currency;
+    private String region;
+    private CardStatus status;
+    private LocalDate expiryDate;
+    private LocalDateTime issueDate;
 
     /**
      * @return the last 4 digits of the card.

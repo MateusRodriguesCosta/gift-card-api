@@ -24,24 +24,24 @@ public class GiftCard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    public UUID id;
+    private UUID id;
     @Column(unique = true, nullable = false)
-    public String token;
+    private String token;
     @Column(unique = true)
     @NotBlank(message = "Card number is mandatory")
     @ValidGiftCardNumber
-    public String cardNumber;
+    private String cardNumber;
     @NotNull(message = "Balance is mandatory")
-    public BigDecimal balance;
+    private BigDecimal balance;
     @NotNull(message = "Card currency is mandatory")
-    public String currency;
+    private String currency;
     @NotNull(message = "Card region is mandatory")
-    public String region;
+    private String region;
     @NotNull(message = "Card status is mandatory")
     @Enumerated(EnumType.STRING)
-    public CardStatus status;
-    public LocalDate expiryDate;
+    private CardStatus status;
+    private LocalDate expiryDate;
     @NotNull(message = "Card issue date is mandatory")
-    public LocalDateTime issueDate;
-    public String user_id;
+    private LocalDateTime issueDate;
+    private String user_id;
 }

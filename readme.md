@@ -7,7 +7,7 @@
  The card number must be valid, and the status should allow the update.
 ### Update gift card expire date:
  The card number must be valid, and status should allow the update.
-### Cancel/block gift card:
+### Cancel gift card:
 The card number must be valid, cannot delete if in use, and balance should be zero.
 ### Bulk Operations:
 Each card must have valid code, balance, and status.
@@ -16,7 +16,7 @@ Each card must have valid code, balance, and status.
  the card need credit in balance to transfer,
  the status should allow the Exchange for both cards, and the cards must not be expired.
 ### PCI DSS
- I found on the internet that this is industry pattern to guarantee security over cards applications
+ I found on the internet that this is industry pattern to guarantee security over cards applications.
 
 # This is current architectural brainstorm
 

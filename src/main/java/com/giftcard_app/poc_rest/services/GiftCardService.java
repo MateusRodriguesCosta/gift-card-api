@@ -4,6 +4,9 @@ import com.giftcard_app.poc_rest.components.CardTokenGenerator;
 import com.giftcard_app.poc_rest.dto.card.CreateCardDTO;
 import com.giftcard_app.poc_rest.dto.card.FullCardDTO;
 import com.giftcard_app.poc_rest.enums.CardStatus;
+import com.giftcard_app.poc_rest.exception.GiftCardNotFoundException;
+import com.giftcard_app.poc_rest.exception.InsufficientBalanceException;
+import com.giftcard_app.poc_rest.exception.InvalidGiftCardStateException;
 import com.giftcard_app.poc_rest.mapper.GiftCardMapper;
 import com.giftcard_app.poc_rest.models.GiftCard;
 import com.giftcard_app.poc_rest.repositories.GiftCardRepository;
@@ -47,16 +50,16 @@ public class GiftCardService {
 
     public FullCardDTO getGiftCardByToken(String token) {
         GiftCard giftCard = giftCardRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Gift card not found"));
+                .orElseThrow(() -> new GiftCardNotFoundException("Gift card not found"));
         return giftCardMapper.toFullDTO(giftCard);
     }
 
     public CreateCardDTO createGiftCard(CreateCardDTO createCardDTO) {
         GiftCard giftCard = giftCardMapper.toEntity(createCardDTO);
-        giftCard.token = cardTokenGenerator.generateToken();
-        giftCard.cardNumber = this.generateGiftCardNumber();
-        giftCard.issueDate = LocalDateTime.now();
-        giftCard.status = CardStatus.ACTIVE;
+        giftCard.setToken(cardTokenGenerator.generateToken());
+        giftCard.setCardNumber(this.generateGiftCardNumber());
+        giftCard.setIssueDate(LocalDateTime.now());
+        giftCard.setStatus(CardStatus.ACTIVE);
         GiftCard savedGiftCard = giftCardRepository.save(giftCard);
 
         return giftCardMapper.toCreateDTO(savedGiftCard);
@@ -65,33 +68,62 @@ public class GiftCardService {
     @Transactional
     public void cancelGiftCard(String token) {
         GiftCard giftCard = giftCardRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Gift card not found"));
+                .orElseThrow(() -> new GiftCardNotFoundException("Gift card not found"));
 
-        if (giftCard.status == CardStatus.ACTIVE) {
-           giftCard.status = CardStatus.CANCELLED;
+        if (giftCard.getStatus() == CardStatus.ACTIVE || giftCard.getStatus() == CardStatus.PENDING || giftCard.getStatus() == CardStatus.EXPIRED) {
+           giftCard.setStatus(CardStatus.CANCELLED);
            giftCardRepository.save(giftCard);
         } else {
-            throw new RuntimeException("Gift card is not active");
+            throw new InvalidGiftCardStateException("Gift card is not active");
         }
     }
 
     @Transactional
-    public FullCardDTO updateGiftCardBalance(String token, BigDecimal amount) {
+    public FullCardDTO creditGiftCardBalance(String token, BigDecimal amount) {
+        GiftCard giftCard = getActiveGiftCardByToken(token);
+        validateAmount(amount);
+
+        giftCard.setBalance(giftCard.getBalance().add(amount));
+        GiftCard savedCard = giftCardRepository.save(giftCard);
+        return giftCardMapper.toFullDTO(savedCard);
+    }
+
+    @Transactional
+    public FullCardDTO debitGiftCardBalance(String token, BigDecimal amount) {
+        GiftCard giftCard = getActiveGiftCardByToken(token);
+        validateAmount(amount);
+
+        if (giftCard.getBalance().compareTo(amount) < 0) {
+            throw new InsufficientBalanceException("Insufficient balance on the gift card");
+        }
+
+        giftCard.setBalance(giftCard.getBalance().subtract(amount));
+        GiftCard savedCard = giftCardRepository.save(giftCard);
+        return giftCardMapper.toFullDTO(savedCard);
+    }
+
+    @Transactional
+    public List<FullCardDTO> exchangeGiftCardBalance(String sourceToken, String targetToken, BigDecimal amount) {
+        FullCardDTO updatedSource = debitGiftCardBalance(sourceToken, amount);
+        FullCardDTO updatedTarget = creditGiftCardBalance(targetToken, amount);
+
+        return List.of(updatedSource, updatedTarget);
+    }
+
+    private GiftCard getActiveGiftCardByToken(String token) {
         GiftCard giftCard = giftCardRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Gift card not found"));
+                .orElseThrow(() -> new GiftCardNotFoundException("Gift card not found"));
 
-        if (giftCard.status != CardStatus.ACTIVE) {
-            throw new RuntimeException("Cannot update balance: gift card is not active");
+        if (giftCard.getStatus() != CardStatus.ACTIVE) {
+            throw new InvalidGiftCardStateException("Gift card is not active");
         }
+        return giftCard;
+    }
 
-        if (amount.compareTo(BigDecimal.ZERO) < 0) {
-            throw new RuntimeException("Cannot update balance: amount less than zero");
+    private void validateAmount(BigDecimal amount) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Amount must be greater than zero");
         }
-
-        giftCard.setBalance(amount);
-        giftCardRepository.save(giftCard);
-
-        return giftCardMapper.toFullDTO(giftCardRepository.save(giftCard));
     }
 
     /**
@@ -112,7 +144,7 @@ public class GiftCardService {
     public boolean isValidGiftCard(String token) {
         GiftCard giftCard = giftCardRepository.findByToken((token))
                 .orElseThrow(() -> new RuntimeException("Gift card not found"));
-        return luhn.isValid(giftCard.cardNumber);
+        return luhn.isValid(giftCard.getCardNumber());
     }
 
     private String appendCheckDigit(String baseNumber) {

@@ -51,11 +51,26 @@ public class GiftCardController {
         return ResponseEntity.ok("Card cancelled successfully");
     }
 
-    @PatchMapping("/balance/{token}")
-    public ResponseEntity<FullCardDTO> balanceGiftCard(@PathVariable String token,
+    @PatchMapping("/credit/{token}")
+    public ResponseEntity<FullCardDTO> creditGiftCardBalance(@PathVariable String token,
                                                        @RequestBody @Valid BalanceUpdateRequest balanceUpdateRequest) {
-        FullCardDTO fullCardDTO = giftCardService.updateGiftCardBalance(token, balanceUpdateRequest.getAmount());
+        FullCardDTO fullCardDTO = giftCardService.creditGiftCardBalance(token, balanceUpdateRequest.getAmount());
         return ResponseEntity.ok(fullCardDTO);
+    }
+
+    @PatchMapping("/debit/{token}")
+    public ResponseEntity<FullCardDTO> debitGiftCardBalance(@PathVariable String token,
+                                                       @RequestBody @Valid BalanceUpdateRequest balanceUpdateRequest) {
+        FullCardDTO fullCardDTO = giftCardService.debitGiftCardBalance(token, balanceUpdateRequest.getAmount());
+        return ResponseEntity.ok(fullCardDTO);
+    }
+
+    @PatchMapping("/exchange/from/{tokenSource}/to/{tokenTarget}")
+    public ResponseEntity<List<FullCardDTO>> exchangeGiftCardBalance(@PathVariable String tokenSource,
+                                                                     @PathVariable String tokenTarget,
+                                                                     @RequestBody @Valid BalanceUpdateRequest balanceUpdateRequest) {
+        List<FullCardDTO> fullCardDTOS = giftCardService.exchangeGiftCardBalance(tokenSource, tokenTarget, balanceUpdateRequest.getAmount());
+        return ResponseEntity.ok(fullCardDTOS);
     }
 
 }
