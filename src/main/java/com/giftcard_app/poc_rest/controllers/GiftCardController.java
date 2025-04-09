@@ -58,14 +58,14 @@ public class GiftCardController {
     @PatchMapping("/credit/{token}")
     public ResponseEntity<FullCardDTO> creditGiftCardBalance(@PathVariable String token,
                                                        @RequestBody @Valid BalanceUpdateRequest balanceUpdateRequest) {
-        FullCardDTO fullCardDTO = giftCardTransactionService.creditGiftCardBalance(token, balanceUpdateRequest.getAmount());
+        FullCardDTO fullCardDTO = giftCardTransactionService.creditGiftCardBalance(token, balanceUpdateRequest.getAmount(), null);
         return ResponseEntity.ok(fullCardDTO);
     }
 
     @PatchMapping("/debit/{token}")
     public ResponseEntity<FullCardDTO> debitGiftCardBalance(@PathVariable String token,
                                                        @RequestBody @Valid BalanceUpdateRequest balanceUpdateRequest) {
-        FullCardDTO fullCardDTO = giftCardTransactionService.debitGiftCardBalance(token, balanceUpdateRequest.getAmount());
+        FullCardDTO fullCardDTO = giftCardTransactionService.debitGiftCardBalance(token, balanceUpdateRequest.getAmount(), null);
         return ResponseEntity.ok(fullCardDTO);
     }
 

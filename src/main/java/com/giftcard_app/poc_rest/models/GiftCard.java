@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Data
@@ -44,4 +44,6 @@ public class GiftCard {
     @NotNull(message = "Card issue date is mandatory")
     private LocalDateTime issueDate;
     private String user_id;
+    @OneToMany(mappedBy = "giftCard", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transaction> transactions = new ArrayList<>();
 }

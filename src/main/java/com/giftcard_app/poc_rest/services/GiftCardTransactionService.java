@@ -2,42 +2,53 @@ package com.giftcard_app.poc_rest.services;
 
 import com.giftcard_app.poc_rest.dto.card.FullCardDTO;
 import com.giftcard_app.poc_rest.enums.CardStatus;
+import com.giftcard_app.poc_rest.enums.TransactionType;
 import com.giftcard_app.poc_rest.exception.GiftCardNotFoundException;
 import com.giftcard_app.poc_rest.exception.InsufficientBalanceException;
 import com.giftcard_app.poc_rest.exception.InvalidGiftCardStateException;
 import com.giftcard_app.poc_rest.mapper.GiftCardMapper;
 import com.giftcard_app.poc_rest.models.GiftCard;
+import com.giftcard_app.poc_rest.models.Transaction;
 import com.giftcard_app.poc_rest.repositories.GiftCardRepository;
+import com.giftcard_app.poc_rest.repositories.TransactionRepository;
+import io.micrometer.common.lang.Nullable;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class GiftCardTransactionService {
 
+    private final TransactionRepository transactionRepository;
     private final GiftCardRepository giftCardRepository;
     private final GiftCardMapper giftCardMapper;
 
     public GiftCardTransactionService(GiftCardRepository giftCardRepository,
+                                      TransactionRepository transactionRepository,
                                       GiftCardMapper giftCardMapper) {
         this.giftCardRepository = giftCardRepository;
+        this.transactionRepository = transactionRepository;
         this.giftCardMapper = giftCardMapper;
     }
 
     @Transactional
-    public FullCardDTO creditGiftCardBalance(String token, BigDecimal amount) {
+    public FullCardDTO creditGiftCardBalance(String token, BigDecimal amount, @Nullable UUID exchangeId) {
         GiftCard giftCard = getActiveGiftCardByToken(token);
         validateAmount(amount);
 
         giftCard.setBalance(giftCard.getBalance().add(amount));
         GiftCard savedCard = giftCardRepository.save(giftCard);
+        recordTransaction(giftCard, TransactionType.CREDIT, amount, exchangeId);
+
         return giftCardMapper.toFullDTO(savedCard);
     }
 
     @Transactional
-    public FullCardDTO debitGiftCardBalance(String token, BigDecimal amount) {
+    public FullCardDTO debitGiftCardBalance(String token, BigDecimal amount, @Nullable UUID exchangeId) {
         GiftCard giftCard = getActiveGiftCardByToken(token);
         validateAmount(amount);
 
@@ -47,17 +58,18 @@ public class GiftCardTransactionService {
 
         giftCard.setBalance(giftCard.getBalance().subtract(amount));
         GiftCard savedCard = giftCardRepository.save(giftCard);
+        recordTransaction(giftCard, TransactionType.DEBIT, amount, exchangeId);
+
         return giftCardMapper.toFullDTO(savedCard);
     }
 
     @Transactional
     public List<FullCardDTO> exchangeGiftCardBalance(String sourceToken, String targetToken, BigDecimal amount) {
-        FullCardDTO updatedSource = debitGiftCardBalance(sourceToken, amount);
-        FullCardDTO updatedTarget = creditGiftCardBalance(targetToken, amount);
+        UUID exchangeId = UUID.randomUUID();
+        FullCardDTO updatedSource = debitGiftCardBalance(sourceToken, amount, exchangeId);
+        FullCardDTO updatedTarget = creditGiftCardBalance(targetToken, amount, exchangeId);
         return List.of(updatedSource, updatedTarget);
     }
-
-    // Helper Methods
 
     private GiftCard getActiveGiftCardByToken(String token) {
         GiftCard giftCard = giftCardRepository.findByToken(token)
@@ -72,5 +84,16 @@ public class GiftCardTransactionService {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Amount must be greater than zero");
         }
+    }
+
+    private void recordTransaction(GiftCard giftCard, TransactionType type, BigDecimal amount, UUID exchangeId) {
+        Transaction transaction = Transaction.builder()
+                .transactionType(type)
+                .transactionAmount(amount)
+                .transactionDateTime(LocalDateTime.now())
+                .exchangeId(exchangeId)
+                .giftCard(giftCard)
+                .build();
+        transactionRepository.save(transaction);
     }
 }

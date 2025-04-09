@@ -90,9 +90,12 @@ public class GiftCardManagementService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Validates the gift card number
+     */
     public boolean isValidGiftCard(String token) {
-        GiftCard giftCard = giftCardRepository.findByToken((token))
-                .orElseThrow(() -> new RuntimeException("Gift card not found"));
-        return luhn.isValid(giftCard.getCardNumber());
+        return giftCardRepository.findByToken(token)
+                .map(giftCard -> luhn.isValid(giftCard.getCardNumber()))
+                .orElse(false);
     }
 }
