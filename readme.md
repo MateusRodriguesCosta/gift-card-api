@@ -1,20 +1,20 @@
 # This is current brainstorm of the API business logic
 
-### Create new gift card:
+### Create new gift card
  Issue new card requires nothing, the system should allow zero balance at start and provide **secure generated code**
  via Apache Commons Validator luhn method.
-### Update gift card balance:
+### Update gift card balance
  The card number must be valid, and the status should allow the update.
-### Update gift card expire date:
+### Update gift card expire date
  The card number must be valid, and status should allow the update.
-### Cancel gift card:
+### Cancel gift card
 The card number must be valid, cannot delete if in use, and balance should be zero.
-### Bulk Operations:
+### Bulk Operations
 Each card must have valid code, balance, and status.
-### Exchange balance between cards:
+### Exchange balance between cards
  both card numbers must be valid,
  the card need credit in balance to transfer,
- the status should allow the Exchange for both cards, and the cards must not be expired.
+ the status should allow the Exchange for both cards, and the cards must be ACTIVE.
 ### PCI DSS
  I found on the internet that this is industry pattern to guarantee security over cards applications.
 
@@ -37,7 +37,7 @@ Each card must have valid code, balance, and status.
  In order to have a transactions history I will add elastic and kibana.
  
 
-# Current project stack:
+# Current project stack
  - JAVA 23
  - Spring Boot (Web, JPA, and Validation) 3.4.3
  - H2 Database 2.3.232
