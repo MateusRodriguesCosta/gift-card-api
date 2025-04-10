@@ -1,6 +1,7 @@
 package com.giftcard_app.poc_rest.services;
 
 import com.giftcard_app.poc_rest.dto.card.FullCardDTO;
+import com.giftcard_app.poc_rest.elastic.TransactionDocument;
 import com.giftcard_app.poc_rest.enums.CardStatus;
 import com.giftcard_app.poc_rest.enums.TransactionType;
 import com.giftcard_app.poc_rest.exception.GiftCardNotFoundException;
@@ -11,6 +12,7 @@ import com.giftcard_app.poc_rest.models.GiftCard;
 import com.giftcard_app.poc_rest.models.Transaction;
 import com.giftcard_app.poc_rest.repositories.GiftCardRepository;
 import com.giftcard_app.poc_rest.repositories.TransactionRepository;
+import com.giftcard_app.poc_rest.repositories.TransactionSearchRepository;
 import io.micrometer.common.lang.Nullable;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -26,13 +28,15 @@ public class GiftCardTransactionService {
     private final TransactionRepository transactionRepository;
     private final GiftCardRepository giftCardRepository;
     private final GiftCardMapper giftCardMapper;
+    private final TransactionSearchRepository transactionSearchRepository;
 
     public GiftCardTransactionService(GiftCardRepository giftCardRepository,
                                       TransactionRepository transactionRepository,
-                                      GiftCardMapper giftCardMapper) {
+                                      GiftCardMapper giftCardMapper, TransactionSearchRepository transactionSearchRepository) {
         this.giftCardRepository = giftCardRepository;
         this.transactionRepository = transactionRepository;
         this.giftCardMapper = giftCardMapper;
+        this.transactionSearchRepository = transactionSearchRepository;
     }
 
     @Transactional
@@ -94,6 +98,20 @@ public class GiftCardTransactionService {
                 .exchangeId(exchangeId)
                 .giftCard(giftCard)
                 .build();
-        transactionRepository.save(transaction);
+
+        Transaction savedTransaction = transactionRepository.save(transaction);
+        TransactionDocument doc = mapToDocument(savedTransaction);
+        transactionSearchRepository.save(doc);
+    }
+
+    private TransactionDocument mapToDocument(Transaction transaction) {
+        return TransactionDocument.builder()
+                .id(transaction.getId())
+                .transactionType(transaction.getTransactionType())
+                .transactionAmount(transaction.getTransactionAmount())
+                .transactionDateTime(transaction.getTransactionDateTime())
+                .exchangeId(transaction.getExchangeId())
+                .giftCardToken(transaction.getGiftCard().getToken())
+                .build();
     }
 }

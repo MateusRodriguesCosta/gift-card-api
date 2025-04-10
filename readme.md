@@ -34,7 +34,9 @@ Each card must have valid code, balance, and status.
  The Springdoc is the best option today for Spring Boot API docs.
 
 ### Elastic
- In order to have a transactions history I will add elastic and kibana.
+ In order to have a transactions history for analytical and search I will add elastic indexed documents. I will keep 
+ saving into the relational database as I think in a real world applications this is the common practice for financial 
+ audits.
  
 
 # Current project stack
