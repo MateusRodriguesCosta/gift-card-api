@@ -1,15 +1,15 @@
-# Base image with Java
-FROM amazoncorretto:23
-
-# Working directory
+# Stage 1: Build the application
+FROM maven:3.8.6-openjdk-17 AS build
 WORKDIR /app
+# Copy pom.xml and source code to leverage cache
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Copy the built jar file into the container
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
-
-# Expose Spring Boot application port listening
+# Stage 2: Create the final image
+FROM amazoncorretto:23
+WORKDIR /app
+# Copy the built JAR from the previous stage
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-
-# Run the jar file
 ENTRYPOINT ["java", "-jar", "app.jar"]
