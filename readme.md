@@ -47,4 +47,6 @@ Each card must have valid code, balance, and status.
  - Maven 3.9.9
  - Springdoc 2.8.6
  - Apache Commons Validator 1.7
+ - Docker images
+ - Elasticsearch 8.7.0
 
