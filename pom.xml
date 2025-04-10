@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.incomm-app</groupId>
-	<artifactId>incomm-poc-rest</artifactId>
+	<artifactId>gift-card-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>incomm-poc-rest</name>
 	<description>Demo project for Spring Boot</description>
