@@ -46,6 +46,6 @@ a thousand transactions per batch.
  - Maven 3.9.9
  - Springdoc 2.8.6
  - Apache Commons Validator 1.7
- - Docker images
+ - Docker 28.0.4
  - Elasticsearch 8.7.0
 
