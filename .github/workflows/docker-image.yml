@@ -20,7 +20,7 @@ jobs:
       - name: Build and run containers with Docker Compose
         run: |
           # Build and start the containers in detached mode
-          docker-compose up --build -d
+          docker compose up --build -d
           # Give the containers some time to start up
           echo "Waiting for services to be up..."
           sleep 30
