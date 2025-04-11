@@ -1,15 +1,15 @@
-# Stage 1: Build the application
-FROM maven:3.9.9-eclipse-temurin-23 AS build
-WORKDIR /app
-# Copy pom.xml and source code to leverage cache
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests
-
-# Stage 2: Create the final image
+# Base image with Java
 FROM amazoncorretto:23
+
+# Working directory
 WORKDIR /app
-# Copy the built JAR from the previous stage
-COPY --from=build /app/target/*.jar app.jar
+
+# Copy the built jar file into the container
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+
+# Expose Spring Boot application port listening
 EXPOSE 8080
+
+# Run the jar file
 ENTRYPOINT ["java", "-jar", "app.jar"]
