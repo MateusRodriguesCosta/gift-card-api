@@ -18,4 +18,3 @@ This repository contains the brainstorm and implementation of a Gift Card API sy
 - **Springdoc** 2.8.6
 - **Apache Commons Validator** 1.7
 - **Docker** 28.0.4
-- **Elasticsearch** 8.7.0

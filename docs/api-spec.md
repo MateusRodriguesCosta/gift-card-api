@@ -16,4 +16,3 @@ _No authentication is currently required._
 
 - All operations require valid card codes.
 - Luhn algorithm used for secure code generation.
-- Supports integration with analytics (Elasticsearch) and async processing (RabbitMQ).

@@ -10,11 +10,6 @@
 
 - Uses **Springdoc** for automatic Swagger documentation in Spring Boot.
 
-### ✅ Elasticsearch
-
-- Used to store transaction history for analytics and search features.
-- Still saves to a relational database for financial audit purposes.
-
 ### 🔁 Batch/Bulk Operations
 
 - Messaging tech (likely **RabbitMQ**) will be used.
