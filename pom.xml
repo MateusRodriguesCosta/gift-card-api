@@ -8,10 +8,10 @@
 		<version>3.4.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.incomm-app</groupId>
+	<groupId>com.gift-card-app</groupId>
 	<artifactId>gift-card-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>incomm-poc-rest</name>
+	<name>gift-card-api</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
