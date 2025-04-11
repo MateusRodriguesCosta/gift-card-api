@@ -53,6 +53,10 @@ jobs:
           sleep 30
           curl --fail http://localhost:8080 || (echo "Spring Boot app is not responding" && exit 1)
 
+      - name: Print container logs
+        if: failure()
+        run: docker logs $(docker ps -alq)
+
       - name: Tear down containers
         if: always()
         run: |
