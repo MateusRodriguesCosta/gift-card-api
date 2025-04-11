@@ -35,6 +35,10 @@ jobs:
           sleep 30
           curl --fail http://localhost:8080/actuator/health || (echo "App not responding" && exit 1)
 
+      - name: Print container logs
+        if: failure()
+        run: docker logs $(docker ps -alq)
+
       - name: Tear down
         if: always()
         run: docker stop $(docker ps -q --filter ancestor=my-spring-app)
