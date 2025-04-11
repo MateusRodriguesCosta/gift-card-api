@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '23'
-          distribution: 'amazoncorretto'
+          distribution: 'temurin'
 
       - name: Build JAR with Maven
         run: mvn clean package -DskipTests
@@ -33,11 +33,7 @@ jobs:
         run: |
           docker run -d -p 8080:8080 spring-app
           sleep 30
-          curl --fail http://localhost:8080/swagger-ui/index.html || (echo "App not responding" && exit 1)
-
-      - name: Print container logs
-        if: failure()
-        run: docker logs $(docker ps -alq)
+          curl --fail http://localhost:8080/actuator/health || (echo "App not responding" && exit 1)
 
       - name: Tear down
         if: always()
