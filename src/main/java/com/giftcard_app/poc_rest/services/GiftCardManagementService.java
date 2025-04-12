@@ -4,6 +4,7 @@ import com.giftcard_app.poc_rest.components.CardNumberGenerator;
 import com.giftcard_app.poc_rest.components.CardTokenGenerator;
 import com.giftcard_app.poc_rest.dto.card.CreateCardDTO;
 import com.giftcard_app.poc_rest.dto.card.FullCardDTO;
+import com.giftcard_app.poc_rest.dto.expiration.ExpirationUpdateRequest;
 import com.giftcard_app.poc_rest.enums.CardStatus;
 import com.giftcard_app.poc_rest.exception.GiftCardNotFoundException;
 import com.giftcard_app.poc_rest.exception.InvalidGiftCardStateException;
@@ -64,8 +65,8 @@ public class GiftCardManagementService {
                 giftCard.getStatus() == CardStatus.PENDING ||
                 giftCard.getStatus() == CardStatus.EXPIRED) {
             giftCard.setStatus(CardStatus.CANCELLED);
-            GiftCard savedCard = giftCardRepository.save(giftCard);
-            return giftCardMapper.toFullDTO(savedCard);
+            GiftCard savedGiftCard = giftCardRepository.save(giftCard);
+            return giftCardMapper.toFullDTO(savedGiftCard);
         } else {
             throw new InvalidGiftCardStateException("Gift card is not in a cancellable state");
         }
@@ -97,5 +98,21 @@ public class GiftCardManagementService {
         return giftCardRepository.findByToken(token)
                 .map(giftCard -> luhn.isValid(giftCard.getCardNumber()))
                 .orElse(false);
+    }
+
+    /**
+     * Updates an active gift card's expiration date
+     */
+    public FullCardDTO updateGiftCardExpiration(String token, ExpirationUpdateRequest expirationUpdateRequest) {
+        GiftCard giftCard = giftCardRepository.findByToken(token)
+                .orElseThrow(() -> new GiftCardNotFoundException("Gift card not found"));
+
+        if (giftCard.getStatus() == CardStatus.ACTIVE) {
+            giftCard.setExpiryDate(expirationUpdateRequest.getExpirationDate());
+            GiftCard savedGiftCard = giftCardRepository.save(giftCard);
+            return giftCardMapper.toFullDTO(savedGiftCard);
+        } else {
+            throw new InvalidGiftCardStateException("Gift card is not in an active state");
+        }
     }
 }

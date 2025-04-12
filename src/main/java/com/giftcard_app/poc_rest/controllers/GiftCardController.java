@@ -3,6 +3,7 @@ package com.giftcard_app.poc_rest.controllers;
 import com.giftcard_app.poc_rest.dto.balance.BalanceUpdateRequest;
 import com.giftcard_app.poc_rest.dto.card.CreateCardDTO;
 import com.giftcard_app.poc_rest.dto.card.FullCardDTO;
+import com.giftcard_app.poc_rest.dto.expiration.ExpirationUpdateRequest;
 import com.giftcard_app.poc_rest.services.GiftCardManagementService;
 import com.giftcard_app.poc_rest.services.GiftCardTransactionService;
 import jakarta.validation.Valid;
@@ -50,9 +51,9 @@ public class GiftCardController {
     }
 
     @PatchMapping("/cancel/{token}")
-    public ResponseEntity<String> cancelGiftCard(@PathVariable String token) {
-        giftCardManagementService.cancelGiftCard(token);
-        return ResponseEntity.ok("Card cancelled successfully");
+    public ResponseEntity<FullCardDTO> cancelGiftCard(@PathVariable String token) {
+        FullCardDTO fullCardDTO = giftCardManagementService.cancelGiftCard(token);
+        return ResponseEntity.ok(fullCardDTO);
     }
 
     @PatchMapping("/credit/{token}")
@@ -75,6 +76,13 @@ public class GiftCardController {
                                                                      @RequestBody @Valid BalanceUpdateRequest balanceUpdateRequest) {
         List<FullCardDTO> fullCardDTOS = giftCardTransactionService.exchangeGiftCardBalance(tokenSource, tokenTarget, balanceUpdateRequest.getAmount());
         return ResponseEntity.ok(fullCardDTOS);
+    }
+
+    @PatchMapping("/expiration/{token}")
+    public ResponseEntity<FullCardDTO> updateGiftCardExpiration(@PathVariable String token,
+                                                                @RequestBody @Valid ExpirationUpdateRequest expirationUpdateRequest) {
+        FullCardDTO fullCardDTO = this.giftCardManagementService.updateGiftCardExpiration(token, expirationUpdateRequest);
+        return ResponseEntity.ok(fullCardDTO);
     }
 
 }
