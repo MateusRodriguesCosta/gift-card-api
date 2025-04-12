@@ -11,7 +11,7 @@
 - Card status must allow the update.
 - Credit and Debit operations.
 
-### 🔁 Update Gift Card Expire Date
+### ✅ Update Gift Card Expire Date
 
 - Card number must be valid.
 - Card status must allow the update.
