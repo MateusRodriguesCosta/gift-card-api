@@ -40,7 +40,7 @@ public class GiftCardController {
 
     @GetMapping("/isValid/{token}")
     public ResponseEntity<Boolean> isValid(@PathVariable String token) {
-        Boolean isValid = this.giftCardManagementService.isValidGiftCard(token);
+        Boolean isValid = giftCardManagementService.isValidGiftCard(token);
         return ResponseEntity.ok(isValid);
     }
 
