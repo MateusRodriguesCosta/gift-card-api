@@ -1,6 +1,8 @@
 package com.giftcard_app.poc_rest.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -16,6 +18,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
@@ -29,6 +33,7 @@ public class GlobalExceptionHandler {
                 .toList();
 
         body.put("errors", errors);
+        logger.error(ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
@@ -42,6 +47,7 @@ public class GlobalExceptionHandler {
         body.put("error", "Bad Request");
         body.put("message", "Invalid request body: " + ex.getMostSpecificCause().getMessage());
         body.put("path", request.getRequestURI());
+        logger.error(ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
@@ -54,6 +60,7 @@ public class GlobalExceptionHandler {
         body.put("error", "Not Found");
         body.put("message", ex.getMessage());
         body.put("path", request.getRequestURI());
+        logger.error(ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
@@ -67,6 +74,7 @@ public class GlobalExceptionHandler {
         body.put("error", "Conflict");
         body.put("message", ex.getMessage());
         body.put("path", request.getRequestURI());
+        logger.error(ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
@@ -80,6 +88,7 @@ public class GlobalExceptionHandler {
         body.put("error", "Unprocessable Entity");
         body.put("message", ex.getMessage());
         body.put("path", request.getRequestURI());
+        logger.error(ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.UNPROCESSABLE_ENTITY);
     }

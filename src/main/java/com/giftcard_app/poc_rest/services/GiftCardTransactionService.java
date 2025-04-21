@@ -13,6 +13,8 @@ import com.giftcard_app.poc_rest.repositories.GiftCardRepository;
 import com.giftcard_app.poc_rest.repositories.TransactionRepository;
 import io.micrometer.common.lang.Nullable;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,6 +28,7 @@ public class GiftCardTransactionService {
     private final TransactionRepository transactionRepository;
     private final GiftCardRepository giftCardRepository;
     private final GiftCardMapper giftCardMapper;
+    private final Logger logger = LoggerFactory.getLogger(GiftCardTransactionService.class);
 
     public GiftCardTransactionService(GiftCardRepository giftCardRepository,
                                       TransactionRepository transactionRepository,
@@ -43,6 +46,7 @@ public class GiftCardTransactionService {
         giftCard.setBalance(giftCard.getBalance().add(amount));
         GiftCard savedCard = giftCardRepository.save(giftCard);
         recordTransaction(giftCard, TransactionType.CREDIT, amount, exchangeId);
+        logger.info("Credit gift card balance: {}", giftCard);
 
         return giftCardMapper.toFullDTO(savedCard);
     }
@@ -53,12 +57,14 @@ public class GiftCardTransactionService {
         validateAmount(amount);
 
         if (giftCard.getBalance().compareTo(amount) < 0) {
+            logger.error("Insufficient balance on the gift card to debit operation");
             throw new InsufficientBalanceException("Insufficient balance on the gift card");
         }
 
         giftCard.setBalance(giftCard.getBalance().subtract(amount));
         GiftCard savedCard = giftCardRepository.save(giftCard);
         recordTransaction(giftCard, TransactionType.DEBIT, amount, exchangeId);
+        logger.info("Debit gift card balance: {}", giftCard);
 
         return giftCardMapper.toFullDTO(savedCard);
     }
@@ -66,8 +72,10 @@ public class GiftCardTransactionService {
     @Transactional
     public List<FullCardDTO> exchangeGiftCardBalance(String sourceToken, String targetToken, BigDecimal amount) {
         UUID exchangeId = UUID.randomUUID();
+        logger.debug("Starting to exchange gift card balance from {} to {}", sourceToken, targetToken);
         FullCardDTO updatedSource = debitGiftCardBalance(sourceToken, amount, exchangeId);
         FullCardDTO updatedTarget = creditGiftCardBalance(targetToken, amount, exchangeId);
+        logger.info("Exchanged gift cards balance: from {} to {}", updatedSource, updatedTarget);
         return List.of(updatedSource, updatedTarget);
     }
 
@@ -75,13 +83,16 @@ public class GiftCardTransactionService {
         GiftCard giftCard = giftCardRepository.findByToken(token)
                 .orElseThrow(() -> new GiftCardNotFoundException("Gift card not found"));
         if (giftCard.getStatus() != CardStatus.ACTIVE) {
+            logger.error("Gift card is not in active state");
             throw new InvalidGiftCardStateException("Gift card is not active");
         }
+        logger.info("Get active gift card: {}", giftCard);
         return giftCard;
     }
 
     private void validateAmount(BigDecimal amount) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            logger.error("Invalid amount for gift card");
             throw new IllegalArgumentException("Amount must be greater than zero");
         }
     }

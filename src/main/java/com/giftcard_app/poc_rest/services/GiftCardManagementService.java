@@ -13,6 +13,8 @@ import com.giftcard_app.poc_rest.models.GiftCard;
 import com.giftcard_app.poc_rest.repositories.GiftCardRepository;
 import jakarta.transaction.Transactional;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,6 +28,7 @@ public class GiftCardManagementService {
     private final GiftCardMapper giftCardMapper;
     private final CardTokenGenerator cardTokenGenerator;
     private final CardNumberGenerator cardNumberGenerator;
+    private final Logger logger = LoggerFactory.getLogger(GiftCardManagementService.class);
 
     private final LuhnCheckDigit luhn = new LuhnCheckDigit();
 
@@ -50,6 +53,7 @@ public class GiftCardManagementService {
         giftCard.setStatus(CardStatus.ACTIVE);
 
         GiftCard savedGiftCard = giftCardRepository.save(giftCard);
+        logger.info("Created gift card: {}", savedGiftCard);
         return giftCardMapper.toCreateDTO(savedGiftCard);
     }
 
@@ -66,8 +70,10 @@ public class GiftCardManagementService {
                 giftCard.getStatus() == CardStatus.EXPIRED) {
             giftCard.setStatus(CardStatus.CANCELLED);
             GiftCard savedGiftCard = giftCardRepository.save(giftCard);
+            logger.info("Cancelled gift card: {}", savedGiftCard);
             return giftCardMapper.toFullDTO(savedGiftCard);
         } else {
+            logger.error("Invalid gift card status for cancel operation");
             throw new InvalidGiftCardStateException("Gift card is not in a cancellable state");
         }
     }
@@ -78,6 +84,7 @@ public class GiftCardManagementService {
     public FullCardDTO getGiftCardByToken(String token) {
         GiftCard giftCard = giftCardRepository.findByToken(token)
                 .orElseThrow(() -> new GiftCardNotFoundException("Gift card not found"));
+        logger.info("Retrieved gift card: {}", giftCard);
         return giftCardMapper.toFullDTO(giftCard);
     }
 
@@ -110,8 +117,10 @@ public class GiftCardManagementService {
         if (giftCard.getStatus() == CardStatus.ACTIVE) {
             giftCard.setExpiryDate(expirationUpdateRequest.getExpirationDate());
             GiftCard savedGiftCard = giftCardRepository.save(giftCard);
+            logger.info("Updated gift card expiration date: {}", savedGiftCard);
             return giftCardMapper.toFullDTO(savedGiftCard);
         } else {
+            logger.error("Invalid gift card status for expiration update operation");
             throw new InvalidGiftCardStateException("Gift card is not in an active state");
         }
     }
