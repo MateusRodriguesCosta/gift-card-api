@@ -1,0 +1,9 @@
+steps:
+  - name: 'gcr.io/cloud-builders/mvn'
+    args: [ 'clean', 'package', '-DskipTests' ]
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build','-t','us-central1-docker.pkg.dev/$PROJECT_ID/spring-repo/app','.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push','us-central1-docker.pkg.dev/$PROJECT_ID/spring-repo/app']
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/spring-repo/app'
