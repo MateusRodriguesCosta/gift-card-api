@@ -5,7 +5,7 @@ COPY .mvn .mvn
 COPY src src
 RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:23-jdk-jammy AS runtime
+FROM eclipse-temurin:23-jdk AS runtime
 WORKDIR /app
 COPY --from=build /workspace/target/*.jar app.jar
 ENTRYPOINT ["java","-jar","/app.jar"]
