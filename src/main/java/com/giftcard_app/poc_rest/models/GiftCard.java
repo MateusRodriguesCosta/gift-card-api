@@ -43,7 +43,6 @@ public class GiftCard {
     private LocalDate expiryDate;
     @NotNull(message = "Card issue date is mandatory")
     private LocalDateTime issueDate;
-    private String user_id;
     @OneToMany(mappedBy = "giftCard", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions = new ArrayList<>();
 }
