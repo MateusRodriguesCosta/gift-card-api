@@ -17,3 +17,5 @@ This repository contains the brainstorm and implementation of a Gift Card API sy
 - **Maven** 3.9.9
 - **Springdoc** 2.8.6
 - **Apache Commons Validator** 1.7
+- **Spring Security** 3.4.3
+- **JJWT** 0.11.5

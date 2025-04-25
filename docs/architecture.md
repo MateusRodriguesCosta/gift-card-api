@@ -10,6 +10,10 @@
 
 - Uses **Springdoc** for automatic Swagger documentation in Spring Boot.
 
+### ✅ Security
+
+- All requests are protected by **Spring Security and JJWT**. The user must be authenticated to make endpoint requests via token.
+
 ### 🔁 Batch/Bulk Operations
 
 - Messaging tech (likely **RabbitMQ**) will be used.

@@ -10,7 +10,8 @@ http://localhost:8080/api/v1
 
 ## Authentication
 
-_No authentication is currently required._
+Users must first register via `/auth/register`, then log in at `/auth/login` to receive a generated HS256 token.
+By including this token in the `Authorization` header, users can access the `/api/v1/**` endpoints as authenticated clients.  
 
 ## Notes
 
