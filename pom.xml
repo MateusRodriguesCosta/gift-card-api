@@ -6,11 +6,11 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.3</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
-	<groupId>com.gift-card-app</groupId>
+	<groupId>costasolutions</groupId>
 	<artifactId>gift-card-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>v3.0.0-SNAPSHOT</version>
 	<name>gift-card-api</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
