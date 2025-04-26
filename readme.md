@@ -19,3 +19,4 @@ This repository contains the brainstorm and implementation of a Gift Card API sy
 - **Apache Commons Validator** 1.7
 - **Spring Security** 3.4.3
 - **JJWT** 0.11.5
+- **GCP PubSub** 6.1.1

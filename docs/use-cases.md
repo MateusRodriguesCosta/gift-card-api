@@ -31,6 +31,10 @@
 
 - PCI DSS is an industry-standard to ensure security in card-based applications.
 
+### ✅ Publish important events
+
+- On credit and debit operations the app publish a topic to a message broker.
+
 ### 🔁 Bulk Operations
 
 - Each card must have a valid code, balance, and status.

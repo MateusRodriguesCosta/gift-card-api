@@ -16,6 +16,6 @@
 
 ### 🔁 Batch/Bulk Operations
 
-- Messaging tech (likely **RabbitMQ**) will be used.
+- Messaging tech will be used ✅ 
 - Exploring **Spring Batch** as a potential solution.
 - Planning to handle large transaction volumes for seasonal peaks (e.g., **Black Friday**, **Spring Sales**).
