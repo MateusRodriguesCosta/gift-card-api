@@ -7,6 +7,7 @@ import com.costasolutions.giftcards.exception.GiftCardNotFoundException;
 import com.costasolutions.giftcards.exception.InsufficientBalanceException;
 import com.costasolutions.giftcards.exception.InvalidGiftCardStateException;
 import com.costasolutions.giftcards.mapper.GiftCardMapper;
+import com.costasolutions.giftcards.messaging.publisher.GiftCardPublisher;
 import com.costasolutions.giftcards.models.GiftCard;
 import com.costasolutions.giftcards.models.Transaction;
 import com.costasolutions.giftcards.repositories.GiftCardRepository;
@@ -28,14 +29,17 @@ public class GiftCardTransactionService {
     private final TransactionRepository transactionRepository;
     private final GiftCardRepository giftCardRepository;
     private final GiftCardMapper giftCardMapper;
+    private final GiftCardPublisher publisher;
     private final Logger logger = LoggerFactory.getLogger(GiftCardTransactionService.class);
 
     public GiftCardTransactionService(GiftCardRepository giftCardRepository,
                                       TransactionRepository transactionRepository,
-                                      GiftCardMapper giftCardMapper) {
+                                      GiftCardMapper giftCardMapper,
+                                      GiftCardPublisher publisher) {
         this.giftCardRepository = giftCardRepository;
         this.transactionRepository = transactionRepository;
         this.giftCardMapper = giftCardMapper;
+        this.publisher = publisher;
     }
 
     @Transactional
@@ -47,6 +51,14 @@ public class GiftCardTransactionService {
         GiftCard savedCard = giftCardRepository.save(giftCard);
         recordTransaction(giftCard, TransactionType.CREDIT, amount, exchangeId);
         logger.info("Credit gift card balance: {}", giftCard);
+
+        GiftCardPublisher.GiftCardEvent event = new GiftCardPublisher.GiftCardEvent(
+                token,
+                TransactionType.CREDIT,
+                amount,
+                LocalDateTime.now()
+        );
+        publisher.publishEvent(event);
 
         return giftCardMapper.toFullDTO(savedCard);
     }
@@ -65,6 +77,14 @@ public class GiftCardTransactionService {
         GiftCard savedCard = giftCardRepository.save(giftCard);
         recordTransaction(giftCard, TransactionType.DEBIT, amount, exchangeId);
         logger.info("Debit gift card balance: {}", giftCard);
+
+        GiftCardPublisher.GiftCardEvent event = new GiftCardPublisher.GiftCardEvent(
+                token,
+                TransactionType.DEBIT,
+                amount,
+                LocalDateTime.now()
+        );
+        publisher.publishEvent(event);
 
         return giftCardMapper.toFullDTO(savedCard);
     }
