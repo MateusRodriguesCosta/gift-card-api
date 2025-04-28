@@ -15,11 +15,12 @@ import jakarta.transaction.Transactional;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class GiftCardManagementService {
@@ -91,11 +92,10 @@ public class GiftCardManagementService {
     /**
      * Retrieves all gift cards.
      */
-    public List<FullCardDTO> getAllGiftCards() {
-        return giftCardRepository.findAll()
-                .stream()
-                .map(giftCardMapper::toFullDTO)
-                .collect(Collectors.toList());
+    public Page<FullCardDTO> getAllGiftCards(int page, int size, String search) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<GiftCard> entityPage = giftCardRepository.search(search, pageable);
+        return entityPage.map(giftCardMapper::toFullDTO);
     }
 
     /**

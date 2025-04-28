@@ -7,6 +7,7 @@ import com.costasolutions.giftcards.dto.expiration.ExpirationUpdateRequest;
 import com.costasolutions.giftcards.services.GiftCardManagementService;
 import com.costasolutions.giftcards.services.GiftCardTransactionService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +28,12 @@ public class GiftCardController {
     }
 
     @GetMapping
-    public ResponseEntity<List<FullCardDTO>> getAll() {
-        List<FullCardDTO> giftCards = giftCardManagementService.getAllGiftCards();
+    public ResponseEntity<Page<FullCardDTO>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search
+    ) {
+        Page<FullCardDTO> giftCards = giftCardManagementService.getAllGiftCards(page, size, search);
         return ResponseEntity.ok(giftCards);
     }
 

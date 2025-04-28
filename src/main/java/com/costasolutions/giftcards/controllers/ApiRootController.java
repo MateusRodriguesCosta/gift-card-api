@@ -23,7 +23,7 @@ public class ApiRootController {
         AuthController.RegisterRequest dummyRegister = new AuthController.RegisterRequest("username", "password");
         model.add(linkTo(methodOn(AuthController.class).register(dummyRegister))
                 .withRel("register"));
-        model.add(linkTo(methodOn(GiftCardController.class).getAll())
+        model.add(linkTo(methodOn(GiftCardController.class).getAll(0, 10, null))
                 .withRel("giftcards"));
         model.add(linkTo(methodOn(GiftCardController.class).createGiftCard(null))
                 .withRel("create-giftcard"));
