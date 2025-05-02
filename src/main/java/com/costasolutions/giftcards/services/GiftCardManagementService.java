@@ -11,6 +11,7 @@ import com.costasolutions.giftcards.exception.InvalidGiftCardStateException;
 import com.costasolutions.giftcards.mapper.GiftCardMapper;
 import com.costasolutions.giftcards.models.GiftCard;
 import com.costasolutions.giftcards.repositories.GiftCardRepository;
+import com.costasolutions.giftcards.repositories.GiftCardSpecification;
 import jakarta.transaction.Transactional;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -94,7 +96,8 @@ public class GiftCardManagementService {
      */
     public Page<FullCardDTO> getAllGiftCards(int page, int size, String search) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<GiftCard> entityPage = giftCardRepository.search(search, pageable);
+        Specification<GiftCard> spec = GiftCardSpecification.filterBy(search);
+        Page<GiftCard> entityPage = giftCardRepository.findAll(spec, pageable);
         return entityPage.map(giftCardMapper::toFullDTO);
     }
 
