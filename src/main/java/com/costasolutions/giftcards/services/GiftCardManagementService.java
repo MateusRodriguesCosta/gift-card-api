@@ -11,7 +11,7 @@ import com.costasolutions.giftcards.exception.InvalidGiftCardStateException;
 import com.costasolutions.giftcards.mapper.GiftCardMapper;
 import com.costasolutions.giftcards.models.GiftCard;
 import com.costasolutions.giftcards.repositories.GiftCardRepository;
-import com.costasolutions.giftcards.repositories.GiftCardSpecification;
+import com.costasolutions.giftcards.repositories.specification.GiftCardSpecification;
 import jakarta.transaction.Transactional;
 import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.slf4j.Logger;
@@ -96,7 +96,7 @@ public class GiftCardManagementService {
      */
     public Page<FullCardDTO> getAllGiftCards(int page, int size, String search) {
         Pageable pageable = PageRequest.of(page, size);
-        Specification<GiftCard> spec = GiftCardSpecification.filterBy(search);
+        Specification<GiftCard> spec = GiftCardSpecification.filterByTokenCardNumberAndStatus(search);
         Page<GiftCard> entityPage = giftCardRepository.findAll(spec, pageable);
         return entityPage.map(giftCardMapper::toFullDTO);
     }

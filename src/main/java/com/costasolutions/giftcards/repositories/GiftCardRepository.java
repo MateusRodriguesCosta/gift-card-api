@@ -13,12 +13,4 @@ import java.util.Optional;
 public interface GiftCardRepository extends JpaRepository<GiftCard, Long>, JpaSpecificationExecutor<GiftCard> {
 
     Optional<GiftCard> findByToken(String token);
-
-    @Query("select g from GiftCard g " +
-            "where (:search is null or " +
-            "lower(g.token) like lower(concat('%', :search, '%')) " +
-            "or lower(g.region) like lower(concat('%', :search, '%')))")
-    Page<GiftCard> search(@Param("search") String search, Pageable pageable);
-
-
 }
