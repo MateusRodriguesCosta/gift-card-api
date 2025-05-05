@@ -2,6 +2,8 @@ package com.costasolutions.giftcards.controllers;
 
 import com.costasolutions.giftcards.configuration.security.JwtUtil;
 import com.costasolutions.giftcards.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,5 +45,15 @@ public class AuthController {
         );
         String token = jwtUtil.generateToken(auth.getName());
         return ResponseEntity.ok(new AuthResponse(token));
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<AuthResponse> refreshToken(HttpServletRequest request) {
+        String refreshToken = jwtUtil.extractFromHeader(request);
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        String newAccessToken = jwtUtil.refreshToken(refreshToken);
+        return ResponseEntity.ok(new AuthResponse(newAccessToken));
     }
 }
