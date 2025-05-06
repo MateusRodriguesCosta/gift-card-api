@@ -1,4 +1,4 @@
-package com.costasolutions.giftcards;
+package com.costasolutions;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

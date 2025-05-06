@@ -1,11 +1,10 @@
-package com.costasolutions.giftcards.configuration.security;
+package com.costasolutions.security.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -21,43 +20,38 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    private static final Duration ACCESS_TOKEN_VALIDITY  = Duration.ofHours(1);
+    private static final Duration REFRESH_TOKEN_VALIDITY = Duration.ofDays(7);
+
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public String generateToken(String username) {
+    public String generateAccessToken(String username) {
         Instant now = Instant.now();
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plus(Duration.ofHours(1))))
+                .setExpiration(Date.from(now.plus(ACCESS_TOKEN_VALIDITY)))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String refreshToken(String refreshToken) {
+    public String generateRefreshToken(String username) {
         Instant now = Instant.now();
-        Jws<Claims> claims = Jwts.parserBuilder()
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(now.plus(REFRESH_TOKEN_VALIDITY)))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public Jws<Claims> parseToken(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
-                .parseClaimsJws(refreshToken);
-
-        String username = claims.getBody().getSubject();
-
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plus(Duration.ofHours(1))))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    public String extractFromHeader(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            return header.substring(7);
-        }
-        return null;
+                .parseClaimsJws(token);
     }
 }

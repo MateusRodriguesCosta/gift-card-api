@@ -1,5 +1,8 @@
 package com.costasolutions.giftcards.controllers;
 
+import com.costasolutions.security.controller.AuthController;
+import com.costasolutions.security.dto.AuthRequest;
+import com.costasolutions.security.dto.RegisterRequest;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
@@ -17,10 +20,10 @@ public class ApiRootController {
     @GetMapping(path = "/")
     public RepresentationModel<?> root() {
         RepresentationModel<?> model = new RepresentationModel<>();
-        AuthController.AuthRequest dummyLogin = new AuthController.AuthRequest("username", "password");
+        AuthRequest dummyLogin = new AuthRequest("username", "password");
         model.add(linkTo(methodOn(AuthController.class).login(dummyLogin))
                 .withRel("login"));
-        AuthController.RegisterRequest dummyRegister = new AuthController.RegisterRequest("username", "password");
+        RegisterRequest dummyRegister = new RegisterRequest("username", "password");
         model.add(linkTo(methodOn(AuthController.class).register(dummyRegister))
                 .withRel("register"));
         model.add(linkTo(methodOn(GiftCardController.class).getAll(0, 10, null))

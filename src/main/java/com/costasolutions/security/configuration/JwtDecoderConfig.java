@@ -1,6 +1,6 @@
 
 
-package com.costasolutions.giftcards.configuration.security;
+package com.costasolutions.security.configuration;
 
 import io.jsonwebtoken.io.Decoders;
 import org.springframework.beans.factory.annotation.Value;
