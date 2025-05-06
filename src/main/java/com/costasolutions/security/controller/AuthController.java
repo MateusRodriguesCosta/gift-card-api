@@ -2,6 +2,7 @@ package com.costasolutions.security.controller;
 
 import com.costasolutions.security.dto.AuthRequest;
 import com.costasolutions.security.dto.AuthResponse;
+import com.costasolutions.security.dto.RefreshRequest;
 import com.costasolutions.security.dto.RegisterRequest;
 import com.costasolutions.security.service.TokenService;
 import com.costasolutions.security.util.JwtUtil;
@@ -49,8 +50,9 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<AuthResponse> refreshToken(@RequestHeader("Authorization") String authorizationHeader) {
-        String refreshToken = authorizationHeader.replace("Bearer ", "");
-        return ResponseEntity.ok(tokenService.refreshToken(refreshToken));
+    public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshRequest refreshRequest) {
+        String refreshToken = refreshRequest.refreshToken();
+        AuthResponse tokens = tokenService.refreshToken(refreshToken);
+        return ResponseEntity.ok(tokens);
     }
 }
